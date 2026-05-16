@@ -78,7 +78,7 @@ export default function OnboardingScreen() {
       {/* Get Started Button */}
       <View className="px-6 mt-auto pb-8">
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/home")}
+          onPress={() => router.push("/(auth)/sign-up")}
           className="bg-lingua-purple rounded-3xl py-4 px-6 flex-row items-center justify-center gap-3"
         >
           <Text className="text-h3 font-poppins-bold text-white text-center">
