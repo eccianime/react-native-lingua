@@ -1,10 +1,17 @@
 import { useLinguaFonts } from "@/hooks/useLinguaFonts";
+import { ClerkProvider } from "@clerk/expo";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import "../../global.css";
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error("Add your Clerk Publishable Key to the .env file");
+}
 
 // Keep the splash screen visible while fonts load
 SplashScreen.preventAutoHideAsync();
@@ -24,9 +31,9 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ClerkProvider publishableKey={publishableKey}>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }} />
-    </>
+    </ClerkProvider>
   );
 }

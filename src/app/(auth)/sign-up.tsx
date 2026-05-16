@@ -1,27 +1,74 @@
-import { images } from "@/constants/images";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthInput } from "@/components/AuthInput";
+import { SocialButtons } from "@/components/SocialButton";
 import { VerificationModal } from "@/components/VerificationModal";
+import { images } from "@/constants/images";
+import { useSignUp } from "@clerk/expo";
+import { Ionicons } from "@expo/vector-icons";
+import { Href, useRouter } from "expo-router";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { signUp, errors, fetchStatus } = useSignUp();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [showVerification, setShowVerification] = useState(false);
 
-  const handleSignUp = () => {
-    if (email && password) {
+  const handleSignUp = async () => {
+    const { error } = await signUp.password({
+      emailAddress: email,
+      password,
+    });
+    if (error) {
+      console.log(JSON.stringify(error, null, 2));
+      return;
+    }
+
+    if (!error) {
+      await signUp.verifications.sendEmailCode();
       setShowVerification(true);
     }
   };
 
-  const handleSocialAuth = () => {
-    // Placeholder for social auth
-    setShowVerification(true);
+  const handleVerify = async (code: string) => {
+    await signUp.verifications.verifyEmailCode({
+      code,
+    });
+    if (signUp.status === "complete") {
+      await signUp.finalize({
+        // Redirect the user to the home page after signing up
+        navigate: ({ session, decorateUrl }) => {
+          // Handle session tasks
+          // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
+          if (session?.currentTask) {
+            console.log(session?.currentTask);
+            return;
+          }
+
+          // If no session tasks, navigate the signed-in user to the home page
+          const url = decorateUrl("/");
+          if (url.startsWith("http")) {
+            window.location.href = url;
+          } else {
+            router.push(url as Href);
+          }
+        },
+      });
+    } else {
+      // Check why the sign-up is not complete
+      console.log("Sign-up attempt not complete:", signUp);
+    }
   };
 
   return (
@@ -33,7 +80,10 @@ export default function SignUpScreen() {
       >
         {/* Back Button */}
         <View className="px-6 pt-4 pb-6">
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            disabled={fetchStatus === "fetching"}
+          >
             <Ionicons name="chevron-back" size={28} color="#0D132B" />
           </TouchableOpacity>
         </View>
@@ -41,121 +91,147 @@ export default function SignUpScreen() {
         {/* Header */}
         <View className="px-6 mb-6">
           <Text className="text--h1 font-poppins-bold text-gray-900 mb-2">
-            Create your account
+            {showVerification ? "Verify email" : "Create your account"}
           </Text>
           <Text className="text--body-large text-gray-600">
-            Start your language journey today ✨
+            {showVerification
+              ? "Enter the code sent to your email"
+              : "Start your language journey today ✨"}
           </Text>
         </View>
 
         {/* Mascot Section with Stars */}
-        <View className="items-center mb-10 relative h-56">
-          <Image
-            source={images.mascotAuth}
-            className="w-full h-full"
-            resizeMode="contain"
-          />
+        {!showVerification && (
+          <View className="items-center relative h-56">
+            <Image
+              source={images.mascotAuth}
+              className="w-full h-full"
+              resizeMode="contain"
+            />
 
-          {/* Decorative Stars */}
-          <Text className="absolute top-8 left-6 text-3xl">✨</Text>
-          <Text className="absolute top-24 right-8 text-2xl">💫</Text>
-          <Text className="absolute bottom-12 right-4 text-2xl">✨</Text>
-        </View>
+            {/* Decorative Stars */}
+            <Text className="absolute top-8 left-6 text-3xl">✨</Text>
+            <Text className="absolute top-24 right-8 text-2xl">💫</Text>
+            <Text className="absolute bottom-12 right-4 text-2xl">✨</Text>
+          </View>
+        )}
+
+        {/* Error Message */}
+        {(errors.fields.emailAddress ||
+          errors.fields.password ||
+          errors.fields.code) && (
+          <View className="px-6 mb-4 bg-red-50 rounded-lg p-3 border border-red-200 mx-6">
+            {errors.fields.emailAddress && (
+              <Text className="text--body-small text-red-600">
+                {errors.fields.emailAddress?.message}
+              </Text>
+            )}
+            {errors.fields.password?.message && (
+              <Text className="text--body-small text-red-600">
+                {errors.fields.password?.message}
+              </Text>
+            )}
+            {errors.fields.code?.message && (
+              <Text className="text--body-small text-red-600">
+                {errors.fields.code?.message}
+              </Text>
+            )}
+          </View>
+        )}
 
         {/* Form Inputs */}
-        <View className="px-6 mb-8">
-          <AuthInput
-            label="Email"
-            placeholder="alex@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <AuthInput
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            isPassword
-          />
-        </View>
+        {!showVerification ? (
+          <View className="px-6 mb-8">
+            <AuthInput
+              label="Email"
+              placeholder="alex@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              editable={fetchStatus !== "fetching"}
+            />
+            <AuthInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              isPassword
+              editable={fetchStatus !== "fetching"}
+            />
+          </View>
+        ) : (
+          <View className="px-6 mb-8">
+            <AuthInput
+              label="Verification Code"
+              placeholder="Enter 6-digit code"
+              value={code}
+              onChangeText={setCode}
+              editable={fetchStatus !== "fetching"}
+              maxLength={6}
+            />
+          </View>
+        )}
 
-        {/* Sign Up Button */}
+        {/* Sign Up / Verify Button */}
         <View className="px-6 mb-6">
           <TouchableOpacity
             onPress={handleSignUp}
-            className="bg-lingua-purple rounded-3xl py-4 items-center active:opacity-90"
+            disabled={fetchStatus === "fetching"}
+            className={`bg-lingua-purple rounded-3xl py-4 items-center ${
+              fetchStatus === "fetching" ? "opacity-60" : "active:opacity-90"
+            }`}
           >
-            <Text className="text--h3 font-poppins-bold text-white">
-              Sign Up
-            </Text>
+            {fetchStatus === "fetching" ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text className="text--h3 font-poppins-bold text-white">
+                {showVerification ? "Verify Aqui" : "Sign Up"}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 
-        {/* Divider */}
-        <View className="px-6 mb-8">
-          <View className="flex-row items-center">
-            <View className="flex-1 h-px bg-gray-200" />
-            <Text className="text--body-small text-gray-600 mx-4">
-              or continue with
-            </Text>
-            <View className="flex-1 h-px bg-gray-200" />
-          </View>
-        </View>
-
-        {/* Social Auth Options */}
-        <View className="px-6 gap-4 mb-8">
-          {/* Google */}
-          <TouchableOpacity
-            onPress={handleSocialAuth}
-            className="flex-row items-center gap-3 border border-gray-200 rounded-xl py-3 px-4 active:bg-gray-50"
-          >
-            <FontAwesome5 name="google" size={20} color="#EA4335" />
-            <Text className="text--body-large font-poppins-semibold text-gray-900 flex-1">
-              Continue with Google
-            </Text>
-          </TouchableOpacity>
-
-          {/* Facebook */}
-          <TouchableOpacity
-            onPress={handleSocialAuth}
-            className="flex-row items-center gap-3 border border-gray-200 rounded-xl py-3 px-4 active:bg-gray-50"
-          >
-            <FontAwesome5 name="facebook" size={20} color="#1877F2" />
-            <Text className="text--body-large font-poppins-semibold text-gray-900 flex-1">
-              Continue with Facebook
-            </Text>
-          </TouchableOpacity>
-
-          {/* Apple */}
-          <TouchableOpacity
-            onPress={handleSocialAuth}
-            className="flex-row items-center gap-3 border border-gray-200 rounded-xl py-3 px-4 active:bg-gray-50"
-          >
-            <FontAwesome5 name="apple" size={20} color="#000000" />
-            <Text className="text--body-large font-poppins-semibold text-gray-900 flex-1">
-              Continue with Apple
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Sign In Link */}
-        <View className="items-center">
-          <View className="flex-row gap-1">
-            <Text className="text--body-medium text-gray-600">
-              Already have an account?
-            </Text>
-            <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
-              <Text className="text--body-medium font-poppins-semibold text-lingua-purple">
-                Log in
+        {/* Back to Sign Up */}
+        {showVerification && (
+          <View className="px-6 mb-6">
+            <TouchableOpacity
+              onPress={() => setShowVerification(false)}
+              disabled={fetchStatus === "fetching"}
+              className="bg-gray-100 rounded-3xl py-4 items-center"
+            >
+              <Text className="text--h3 font-poppins-bold text-gray-900">
+                Back
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        )}
+
+        {!showVerification && (
+          <>
+            <SocialButtons fetchStatus={fetchStatus} />
+            {/* Sign In Link */}
+            <View className="items-center">
+              <View className="flex-row gap-1">
+                <Text className="text--body-medium text-gray-600">
+                  Already have an account?
+                </Text>
+                <TouchableOpacity
+                  onPress={() => router.push("/(auth)/sign-in")}
+                  disabled={fetchStatus === "fetching"}
+                >
+                  <Text className="text--body-medium font-poppins-semibold text-lingua-purple">
+                    Log in
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        )}
       </ScrollView>
 
       <VerificationModal
         isVisible={showVerification}
         onClose={() => setShowVerification(false)}
+        handleValidateCode={handleVerify}
       />
     </SafeAreaView>
   );

@@ -8,6 +8,8 @@ interface AuthInputProps {
   readonly value: string;
   readonly onChangeText: (text: string) => void;
   readonly isPassword?: boolean;
+  readonly editable?: boolean;
+  readonly maxLength?: number;
 }
 
 export function AuthInput({
@@ -16,6 +18,8 @@ export function AuthInput({
   value,
   onChangeText,
   isPassword = false,
+  editable,
+  maxLength,
 }: Readonly<AuthInputProps>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -31,6 +35,8 @@ export function AuthInput({
         style={{
           minHeight: 56,
         }}
+        editable={editable ?? true}
+        maxLength={maxLength}
       />
       {isPassword && (
         <TouchableOpacity

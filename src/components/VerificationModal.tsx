@@ -12,11 +12,13 @@ import {
 interface VerificationModalProps {
   readonly isVisible: boolean;
   readonly onClose: () => void;
+  readonly handleValidateCode: (code: string) => void;
 }
 
 export function VerificationModal({
   isVisible,
   onClose,
+  handleValidateCode,
 }: Readonly<VerificationModalProps>) {
   const [code, setCode] = useState("");
   const router = useRouter();
@@ -24,9 +26,8 @@ export function VerificationModal({
   // Auto-navigate when 6 digits are entered
   useEffect(() => {
     if (code.length === 6) {
-      setTimeout(() => {
-        router.replace("/");
-      }, 300);
+      onClose();
+      handleValidateCode(code);
     }
   }, [code, router]);
 
@@ -58,7 +59,7 @@ export function VerificationModal({
                 Verify your email
               </Text>
               <Text className="text--body-medium text-gray-600 text-center">
-                We've sent a verification code to your email
+                We&apos;ve sent a verification code to your email
               </Text>
             </View>
 
