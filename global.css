@@ -1,3 +1,316 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   Lingua Design System — Global CSS Utilities
+   Using BEM naming convention for custom utilities
+   ============================================================ */
+
+@layer base {
+  /* Apply Poppins as the default font family across the app */
+  * {
+    font-family: "Poppins_400Regular", sans-serif;
+  }
+}
+
+@layer components {
+  /* ── Typography Utilities ─────────────────────────────── */
+
+  /* H1: Page / Screen Title — 32px Bold, lh 1.2 */
+  .text--h1 {
+    @apply text-[32px] font-bold leading-[38px] text-[#0D132B];
+  }
+
+  /* H2: Section Title — 24px SemiBold, lh 1.3 */
+  .text--h2 {
+    @apply text-[24px] font-semibold leading-[31px] text-[#0D132B];
+  }
+
+  /* H3: Card / Module Title — 20px SemiBold, lh 1.3 */
+  .text--h3 {
+    @apply text-[20px] font-semibold leading-[26px] text-[#0D132B];
+  }
+
+  /* H4: Subheading — 16px Medium, lh 1.4 */
+  .text--h4 {
+    @apply text-[16px] font-medium leading-[22px] text-[#0D132B];
+  }
+
+  /* Body Large: Important content — 16px Regular, lh 1.6 */
+  .text--body-large {
+    @apply text-[16px] font-normal leading-[26px] text-[#0D132B];
+  }
+
+  /* Body Medium: Body text — 14px Regular, lh 1.6 */
+  .text--body-medium {
+    @apply text-[14px] font-normal leading-[22px] text-[#0D132B];
+  }
+
+  /* Body Small: Supporting text — 13px Regular, lh 1.6 */
+  .text--body-small {
+    @apply text-[13px] font-normal leading-[21px] text-[#6B7280];
+  }
+
+  /* Caption: Labels, meta text — 11px Regular, lh 1.4 */
+  .text--caption {
+    @apply text-[11px] font-normal leading-[15px] text-[#6B7280];
+  }
+
+  /* ── Color Utilities (Semantic) ───────────────────────── */
+
+  .text--primary {
+    @apply text-[#6C4EF5];
+  }
+  .text--success {
+    @apply text-[#21C16B];
+  }
+  .text--warning {
+    @apply text-[#FFC800];
+  }
+  .text--streak {
+    @apply text-[#FF8A00];
+  }
+  .text--error {
+    @apply text-[#FF4D4F];
+  }
+  .text--info {
+    @apply text-[#4D8BFF];
+  }
+  .text--secondary {
+    @apply text-[#6B7280];
+  }
+  .text--muted {
+    @apply text-[#6B7280];
+  }
+
+  /* ── Button Utilities ─────────────────────────────────── */
+
+  /* btn--primary: filled purple CTA button */
+  .btn--primary {
+    @apply bg-[#6C4EF5] rounded-[14px] items-center justify-center py-[16px] px-[24px];
+  }
+
+  .btn--primary__label {
+    @apply text-white text-[16px] font-semibold leading-[22px];
+  }
+
+  /* btn--secondary: outlined button */
+  .btn--secondary {
+    @apply border border-[#6C4EF5] rounded-[14px] items-center justify-center py-[16px] px-[24px] bg-transparent;
+  }
+
+  .btn--secondary__label {
+    @apply text-[#6C4EF5] text-[16px] font-semibold leading-[22px];
+  }
+
+  /* btn--ghost: no background, no border */
+  .btn--ghost {
+    @apply items-center justify-center py-[12px] px-[16px];
+  }
+
+  .btn--ghost__label {
+    @apply text-[#6C4EF5] text-[14px] font-medium leading-[20px];
+  }
+
+  /* btn--danger */
+  .btn--danger {
+    @apply bg-[#FF4D4F] rounded-[14px] items-center justify-center py-[16px] px-[24px];
+  }
+
+  .btn--danger__label {
+    @apply text-white text-[16px] font-semibold leading-[22px];
+  }
+
+  /* ── Card Utilities ───────────────────────────────────── */
+
+  /* card: default elevated card */
+  .card {
+    @apply bg-white rounded-[20px] p-[16px];
+  }
+
+  /* card--surface: card on surface background */
+  .card--surface {
+    @apply bg-[#F6F7FB] rounded-[20px] p-[16px];
+  }
+
+  /* card--bordered: card with border, no shadow */
+  .card--bordered {
+    @apply bg-white rounded-[20px] p-[16px] border border-[#E5E7EB];
+  }
+
+  /* ── Badge / Pill Utilities ───────────────────────────── */
+
+  .badge--primary {
+    @apply bg-[#EDE9FE] rounded-full px-[10px] py-[4px];
+  }
+
+  .badge--primary__label {
+    @apply text-[#6C4EF5] text-[11px] font-semibold leading-[15px];
+  }
+
+  .badge--success {
+    @apply bg-[#D1FAE5] rounded-full px-[10px] py-[4px];
+  }
+
+  .badge--success__label {
+    @apply text-[#21C16B] text-[11px] font-semibold leading-[15px];
+  }
+
+  .badge--streak {
+    @apply bg-[#FFF3E0] rounded-full px-[10px] py-[4px];
+  }
+
+  .badge--streak__label {
+    @apply text-[#FF8A00] text-[11px] font-semibold leading-[15px];
+  }
+
+  .badge--error {
+    @apply bg-[#FFE4E4] rounded-full px-[10px] py-[4px];
+  }
+
+  .badge--error__label {
+    @apply text-[#FF4D4F] text-[11px] font-semibold leading-[15px];
+  }
+
+  /* ── Input Utilities ──────────────────────────────────── */
+
+  .input--default {
+    @apply bg-[#F6F7FB] rounded-[14px] px-[16px] py-[14px] text-[14px] text-[#0D132B] border border-[#E5E7EB];
+  }
+
+  .input--focused {
+    @apply border-[#6C4EF5];
+  }
+
+  .input--error {
+    @apply border-[#FF4D4F];
+  }
+
+  .input__label {
+    @apply text-[13px] font-medium text-[#0D132B] mb-[6px];
+  }
+
+  .input__helper {
+    @apply text-[11px] font-normal text-[#6B7280] mt-[4px];
+  }
+
+  .input__error-text {
+    @apply text-[11px] font-normal text-[#FF4D4F] mt-[4px];
+  }
+
+  /* ── Progress Bar Utilities ───────────────────────────── */
+
+  .progress-bar {
+    @apply h-[8px] bg-[#E5E7EB] rounded-full overflow-hidden;
+  }
+
+  .progress-bar__fill {
+    @apply h-full bg-[#6C4EF5] rounded-full;
+  }
+
+  .progress-bar__fill--success {
+    @apply h-full bg-[#21C16B] rounded-full;
+  }
+
+  .progress-bar__fill--streak {
+    @apply h-full bg-[#FF8A00] rounded-full;
+  }
+
+  /* ── Layout Utilities ─────────────────────────────────── */
+
+  /* screen: full-screen container with background */
+  .screen {
+    @apply flex-1 bg-[#FFFFFF];
+  }
+
+  /* screen--surface: screen with surface bg */
+  .screen--surface {
+    @apply flex-1 bg-[#F6F7FB];
+  }
+
+  /* section: vertical stack with horizontal padding */
+  .section {
+    @apply px-[16px] py-[12px];
+  }
+
+  /* section--lg: more vertical breathing room */
+  .section--lg {
+    @apply px-[16px] py-[24px];
+  }
+
+  /* row: horizontal flex container, vertically centered */
+  .row {
+    @apply flex-row items-center;
+  }
+
+  /* row--between: spaced row */
+  .row--between {
+    @apply flex-row items-center justify-between;
+  }
+
+  /* divider */
+  .divider {
+    @apply h-[1px] bg-[#E5E7EB] w-full;
+  }
+
+  /* ── XP / Gamification Utilities ─────────────────────── */
+
+  /* xp-chip: inline XP indicator */
+  .xp-chip {
+    @apply flex-row items-center bg-[#EDE9FE] rounded-full px-[10px] py-[4px] gap-[4px];
+  }
+
+  .xp-chip__label {
+    @apply text-[#6C4EF5] text-[12px] font-semibold leading-[16px];
+  }
+
+  /* streak-chip */
+  .streak-chip {
+    @apply flex-row items-center bg-[#FFF3E0] rounded-full px-[10px] py-[4px] gap-[4px];
+  }
+
+  .streak-chip__label {
+    @apply text-[#FF8A00] text-[12px] font-semibold leading-[16px];
+  }
+
+  /* ── Lesson Card Utilities ────────────────────────────── */
+
+  .lesson-card {
+    @apply bg-white rounded-[20px] p-[16px] border border-[#E5E7EB];
+  }
+
+  .lesson-card--locked {
+    @apply bg-[#F6F7FB] rounded-[20px] p-[16px] border border-[#E5E7EB] opacity-60;
+  }
+
+  .lesson-card--completed {
+    @apply bg-[#F0FDF4] rounded-[20px] p-[16px] border border-[#21C16B];
+  }
+
+  /* ── Avatar / Icon Container Utilities ───────────────── */
+
+  .avatar--sm {
+    @apply w-[32px] h-[32px] rounded-full bg-[#EDE9FE] items-center justify-center overflow-hidden;
+  }
+
+  .avatar--md {
+    @apply w-[48px] h-[48px] rounded-full bg-[#EDE9FE] items-center justify-center overflow-hidden;
+  }
+
+  .avatar--lg {
+    @apply w-[64px] h-[64px] rounded-full bg-[#EDE9FE] items-center justify-center overflow-hidden;
+  }
+
+  .icon-container--primary {
+    @apply w-[44px] h-[44px] rounded-[14px] bg-[#EDE9FE] items-center justify-center;
+  }
+
+  .icon-container--success {
+    @apply w-[44px] h-[44px] rounded-[14px] bg-[#D1FAE5] items-center justify-center;
+  }
+
+  .icon-container--warning {
+    @apply w-[44px] h-[44px] rounded-[14px] bg-[#FFFBEB] items-center justify-center;
+  }
+}
