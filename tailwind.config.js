@@ -11,6 +11,7 @@ module.exports = {
         "lingua-deep-purple": "#5B3BF6",
         "lingua-blue": "#4D8BFF",
         "lingua-green": "#21C16B",
+        "lingua-orange": "#FF6B35",
 
         // Semantic
         success: "#21C16B",

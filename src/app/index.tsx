@@ -1,11 +1,21 @@
-import { Text, View } from "react-native";
+import { useAuth } from "@clerk/expo";
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 
 export default function Index() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-h2 mt-120 text-text-center text-lingua-purple">
-        Lingua
-      </Text>
-    </View>
-  );
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#7D4FFF" />
+      </View>
+    );
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href="/onboarding" />;
+  }
+
+  return <Redirect href="/(tabs)/home" />;
 }
